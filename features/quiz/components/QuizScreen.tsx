@@ -3,35 +3,42 @@
 /**
  * QuizScreen — Layar utama saat quiz berlangsung.
  *
- * Komponen ini adalah "stage" tempat drama quiz terjadi.
- * Dia mengatur layout keseluruhan dan mendelegasikan
- * detail ke sub-komponen yang lebih kecil.
- *
- * Hierarki komponen di layar ini:
- *
+ * Hierarki:
  * QuizScreen
- * ├── Progress Bar (soal ke-N dari total)
- * ├── Header Row
- * │   ├── Category + Difficulty badge
- * │   └── Timer (circular)
+ * ├── Progress bar (soal ke-N dari total)
  * ├── Question Card
+ * │   ├── Header (category, difficulty badge, Timer)
  * │   ├── Teks soal
- * │   └── Answer Options (grid of buttons)
- * └── Score tracker
+ * │   ├── Answer Options
+ * │   └── Feedback banner (correct/incorrect/timeout)
+ * └── Question dots navigation
  */
 
 import { useQuizStore } from "../store/useQuizStore";
 import { useTimer } from "../hooks/useTimer";
 import { Timer } from "./Timer";
 import { TOTAL_QUESTIONS } from "@/constants/quiz";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
+import { Check, X, Clock } from "lucide-react";
+
+type OptionStatus = "idle" | "correct" | "incorrect";
+
+const DIFFICULTY_BADGE_CLASS: Record<string, string> = {
+  easy: "bg-correct-light text-easy border-transparent",
+  medium: "bg-timeout-light text-medium border-transparent",
+  hard: "bg-incorrect-light text-hard border-transparent",
+};
+
+const DIFFICULTY_EMOJI: Record<string, string> = {
+  easy: "🟢",
+  medium: "🟡",
+  hard: "🔴",
+};
 
 export function QuizScreen() {
-  /**
-   * Aktifkan timer. Hook ini tidak return apa-apa —
-   * dia hanya menjalankan side effect (setInterval)
-   * dan berinteraksi langsung dengan store.
-   * Cukup dipanggil di sini, timer langsung jalan.
-   */
   useTimer();
 
   const questions = useQuizStore((s) => s.questions);
@@ -42,179 +49,70 @@ export function QuizScreen() {
   const selectAnswer = useQuizStore((s) => s.selectAnswer);
 
   const currentQuestion = questions[currentQuestionIndex];
-
-  // Guard: kalau soal belum ada (edge case), jangan render
   if (!currentQuestion) return null;
 
   const questionNumber = currentQuestionIndex + 1;
 
-  /**
-   * Tentukan status visual setiap option button.
-   * Ini dipanggil per option saat render.
-   *
-   * Logika:
-   * - Belum ada jawaban dipilih → semua "idle"
-   * - Sudah ada jawaban:
-   *   - Option yang benar → "correct" (selalu hijau)
-   *   - Option yang dipilih user dan salah → "incorrect"
-   *   - Option lain → "idle" (pudar/disabled)
-   */
-  const getOptionStatus = (
-    option: string
-  ): "idle" | "correct" | "incorrect" | "timeout" => {
+  const getOptionStatus = (option: string): OptionStatus => {
     if (!isAnswerRevealed) return "idle";
-
     if (option === currentQuestion.correctAnswer) return "correct";
-
-    // Kalau selectedAnswer null = timer habis, tidak ada yang dipilih
     if (selectedAnswer === null) return "idle";
-
     if (option === selectedAnswer) return "incorrect";
-
     return "idle";
   };
 
-  /**
-   * Style tiap option berdasarkan statusnya.
-   * Dikembalikan sebagai object supaya bisa dipakai
-   * di style prop dan className sekaligus.
-   */
-  const getOptionStyle = (status: ReturnType<typeof getOptionStatus>) => {
-    // BARU
-    const base = {
-    transition: "all 0.15s cubic-bezier(0.4, 0, 0.2, 1)",
-    };
-
-    switch (status) {
-      case "correct":
-        return {
-          ...base,
-          background: "var(--color-correct-light)",
-          borderColor: "var(--color-correct)",
-          color: "var(--color-correct)",
-        };
-      case "incorrect":
-        return {
-          ...base,
-          background: "var(--color-incorrect-light)",
-          borderColor: "var(--color-incorrect)",
-          color: "var(--color-incorrect)",
-        };
-      default:
-        return {
-          ...base,
-          background: "var(--color-surface-raised)",
-          borderColor: "var(--color-border)",
-          color: "var(--color-text-secondary)",
-        };
-    }
-  };
-
-  /**
-   * Progress bar percentage.
-   * Kita hitung soal yang SUDAH selesai, bukan yang sedang dikerjakan.
-   * Jadi soal pertama = 0%, soal terakhir selesai = 100%.
-   */
   const progressPercent = (currentQuestionIndex / TOTAL_QUESTIONS) * 100;
 
   return (
     <div className="space-y-6 animate-fade-in">
-
       {/* ── Progress Bar ── */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span
-            className="text-sm font-medium"
-            style={{ color: "var(--color-text-secondary)" }}
-          >
+          <span className="text-sm font-medium text-secondary">
             Question {questionNumber} of {TOTAL_QUESTIONS}
           </span>
-          <span
-            className="text-sm font-semibold"
-            style={{ color: "var(--color-accent)" }}
-          >
-            {score} pts
-          </span>
+          <span className="text-sm font-semibold text-accent">{score} pts</span>
         </div>
-
-        {/* Track */}
-        <div
-          className="h-1.5 rounded-full overflow-hidden"
-          style={{ background: "var(--color-border)" }}
-        >
-          {/* Fill */}
-          <div
-            className="h-full rounded-full"
-            style={{
-              width: `${progressPercent}%`,
-              background: "var(--color-accent)",
-              transition: "width 0.4s ease",
-            }}
-          />
-        </div>
+        <Progress
+          value={progressPercent}
+          className="h-1.5 bg-border [&>div]:bg-accent [&>div]:transition-[width] [&>div]:duration-400"
+        />
       </div>
 
       {/* ── Question Card ── */}
-      <div
-        /**
-         * key={currentQuestion.id} di sini sangat penting.
-         * Dengan key yang berubah setiap soal berganti,
-         * React akan DESTROY komponen lama dan CREATE yang baru —
-         * bukan update komponen yang sama.
-         * Efeknya: animasi fade-in jalan ulang setiap soal baru muncul.
-         * Tanpa key: komponen yang sama di-update, animasi tidak jalan.
-         */
+      <Card
         key={currentQuestion.id}
-        className="card-padded space-y-6 animate-fade-in-scale"
+        className="p-4 sm:p-6 space-y-6 animate-fade-in-scale shadow-md rounded-xl"
       >
-
         {/* — Header: Category, Difficulty, Timer — */}
         <div className="flex items-start justify-between gap-4">
           <div className="space-y-1.5">
-            <p
-              className="text-xs font-medium uppercase tracking-wider"
-              style={{ color: "var(--color-text-tertiary)" }}
-            >
+            <p className="text-xs font-medium uppercase tracking-wider text-tertiary">
               {currentQuestion.category}
             </p>
-            {/* Difficulty badge */}
-            <span className={`badge badge-${currentQuestion.difficulty}`}>
-              {currentQuestion.difficulty === "easy" && "🟢"}
-              {currentQuestion.difficulty === "medium" && "🟡"}
-              {currentQuestion.difficulty === "hard" && "🔴"}
-              {" "}{currentQuestion.difficulty}
-            </span>
+            <Badge
+              className={cn(
+                "font-medium capitalize gap-1",
+                DIFFICULTY_BADGE_CLASS[currentQuestion.difficulty]
+              )}
+            >
+              {DIFFICULTY_EMOJI[currentQuestion.difficulty]} {currentQuestion.difficulty}
+            </Badge>
           </div>
 
-          {/* Timer di pojok kanan */}
           <Timer />
         </div>
 
         {/* — Teks Soal — */}
-        <div>
-          <h2
-            className="text-lg font-semibold leading-snug"
-            style={{
-              color: "var(--color-text-primary)",
-              letterSpacing: "-0.01em",
-            }}
-          >
-            {currentQuestion.question}
-          </h2>
-        </div>
+        <h2 className="font-heading text-lg font-semibold leading-snug tracking-tight text-text-primary">
+          {currentQuestion.question}
+        </h2>
 
         {/* — Answer Options — */}
         <div className="space-y-2.5" role="list" aria-label="Answer options">
           {currentQuestion.options.map((option, index) => {
             const status = getOptionStatus(option);
-            const optionStyle = getOptionStyle(status);
             const isDisabled = isAnswerRevealed;
-
-            /**
-             * Label huruf untuk setiap option: A, B, C, D
-             * Ini membantu orientasi user — lebih mudah
-             * mengingat "saya pilih C" daripada mengingat teks panjang.
-             */
             const optionLabel = ["A", "B", "C", "D"][index];
 
             return (
@@ -223,58 +121,38 @@ export function QuizScreen() {
                 onClick={() => selectAnswer(option)}
                 disabled={isDisabled}
                 role="listitem"
-                className="w-full text-left px-4 py-3.5 rounded-xl border font-medium text-sm flex items-center gap-3 disabled:cursor-not-allowed active:scale-[0.99]"
-                style={{
-                  ...optionStyle,
-                  opacity: isDisabled && status === "idle" ? 0.5 : 1,
-                }}
-                onMouseEnter={(e) => {
-                  if (!isDisabled) {
-                    (e.currentTarget as HTMLButtonElement).style.borderColor =
-                      "var(--color-accent)";
-                    (e.currentTarget as HTMLButtonElement).style.background =
-                      "var(--color-accent-light)";
-                    (e.currentTarget as HTMLButtonElement).style.color =
-                      "var(--color-accent)";
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isDisabled) {
-                    const s = getOptionStyle(getOptionStatus(option));
-                    (e.currentTarget as HTMLButtonElement).style.borderColor =
-                      s.borderColor;
-                    (e.currentTarget as HTMLButtonElement).style.background =
-                      s.background;
-                    (e.currentTarget as HTMLButtonElement).style.color =
-                      s.color;
-                  }
-                }}
                 aria-label={`Option ${optionLabel}: ${option}`}
+                className={cn(
+                  "w-full text-left px-4 py-3.5 rounded-xl border font-medium text-sm flex items-center gap-3 transition-all duration-150 active:scale-[0.99] disabled:cursor-not-allowed",
+                  status === "correct" &&
+                    "bg-correct-light border-correct text-correct",
+                  status === "incorrect" &&
+                    "bg-incorrect-light border-incorrect text-incorrect",
+                  status === "idle" &&
+                    cn(
+                      "bg-surface-raised border-border text-secondary",
+                      !isDisabled &&
+                        "hover:border-accent hover:bg-accent-light hover:text-accent",
+                      isDisabled && "opacity-50"
+                    )
+                )}
               >
-                {/* Label huruf */}
                 <span
-                  className="shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold"
-                  style={{
-                    background:
-                      status === "correct"
-                        ? "var(--color-correct)"
-                        : status === "incorrect"
-                          ? "var(--color-incorrect)"
-                          : "var(--color-border)",
-                    color:
-                      status === "correct" || status === "incorrect"
-                        ? "#ffffff"
-                        : "var(--color-text-secondary)",
-                  }}
+                  className={cn(
+                    "shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold",
+                    status === "correct" && "bg-correct text-white",
+                    status === "incorrect" && "bg-incorrect text-white",
+                    status === "idle" && "bg-border text-secondary"
+                  )}
                 >
-                  {status === "correct"
-                    ? "✓"
-                    : status === "incorrect"
-                      ? "✗"
-                      : optionLabel}
+                  {status === "correct" ? (
+                    <Check className="size-3.5" />
+                  ) : status === "incorrect" ? (
+                    <X className="size-3.5" />
+                  ) : (
+                    optionLabel
+                  )}
                 </span>
-
-                {/* Teks option */}
                 <span className="flex-1">{option}</span>
               </button>
             );
@@ -283,14 +161,8 @@ export function QuizScreen() {
 
         {/* — Timeout Message — */}
         {isAnswerRevealed && selectedAnswer === null && (
-          <div
-            className="flex items-center gap-2 text-sm px-4 py-3 rounded-xl animate-fade-in"
-            style={{
-              background: "var(--color-timeout-light)",
-              color: "var(--color-timeout)",
-            }}
-          >
-            <span>⏱</span>
+          <div className="flex items-center gap-2 text-sm px-4 py-3 rounded-xl animate-fade-in bg-timeout-light text-timeout">
+            <Clock className="size-4 shrink-0" />
             <span className="font-medium">
               Time&apos;s up! The correct answer is highlighted above.
             </span>
@@ -301,14 +173,8 @@ export function QuizScreen() {
         {isAnswerRevealed &&
           selectedAnswer !== null &&
           selectedAnswer === currentQuestion.correctAnswer && (
-            <div
-              className="flex items-center gap-2 text-sm px-4 py-3 rounded-xl animate-fade-in"
-              style={{
-                background: "var(--color-correct-light)",
-                color: "var(--color-correct)",
-              }}
-            >
-              <span>✓</span>
+            <div className="flex items-center gap-2 text-sm px-4 py-3 rounded-xl animate-fade-in bg-correct-light text-correct">
+              <Check className="size-4 shrink-0" />
               <span className="font-medium">Correct! Well done.</span>
             </div>
           )}
@@ -317,20 +183,14 @@ export function QuizScreen() {
         {isAnswerRevealed &&
           selectedAnswer !== null &&
           selectedAnswer !== currentQuestion.correctAnswer && (
-            <div
-              className="flex items-center gap-2 text-sm px-4 py-3 rounded-xl animate-fade-in"
-              style={{
-                background: "var(--color-incorrect-light)",
-                color: "var(--color-incorrect)",
-              }}
-            >
-              <span>✗</span>
+            <div className="flex items-center gap-2 text-sm px-4 py-3 rounded-xl animate-fade-in bg-incorrect-light text-incorrect">
+              <X className="size-4 shrink-0" />
               <span className="font-medium">
                 Not quite. Check the correct answer above.
               </span>
             </div>
           )}
-      </div>
+      </Card>
 
       {/* ── Bottom: Question dots navigation ── */}
       <div className="flex items-center justify-center gap-1.5">
@@ -341,16 +201,14 @@ export function QuizScreen() {
           return (
             <div
               key={i}
-              className="rounded-full transition-all duration-300"
-              style={{
-                width: isCurrent ? "24px" : "8px",
-                height: "8px",
-                background: isCurrent
-                  ? "var(--color-accent)"
+              className={cn(
+                "h-2 rounded-full transition-all duration-300",
+                isCurrent
+                  ? "w-6 bg-accent"
                   : isCompleted
-                    ? "var(--color-text-tertiary)"
-                    : "var(--color-border)",
-              }}
+                    ? "w-2 bg-tertiary"
+                    : "w-2 bg-border"
+              )}
               aria-label={
                 isCurrent
                   ? `Current question ${i + 1}`
