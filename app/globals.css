@@ -7,7 +7,7 @@
 
 @theme {
   --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
-  --font-heading: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
+--font-heading: var(--font-display), ui-sans-serif, system-ui, sans-serif;
 
   --color-bg: #fafafa;
   --color-surface: #ffffff;

@@ -18,7 +18,7 @@ const figtree = Figtree({
 
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-heading",
+  variable: "--font-display", // <-- ganti dari --font-heading
   display: "swap",
 });
 
