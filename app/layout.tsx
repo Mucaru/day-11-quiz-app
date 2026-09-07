@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Figtree } from "next/font/google";
 import "./globals.css";
+import { cn } from "@/lib/utils";
+
+const figtree = Figtree({subsets:['latin'],variable:'--font-sans'});
 
 /**
  * Setup font Inter dari Google Fonts via next/font.
@@ -68,7 +71,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
+    <html lang="en" className={cn("font-sans", figtree.variable)}>
       {/*
         lang="en" penting untuk aksesibilitas:
         screen reader akan tahu bahasa halaman ini
