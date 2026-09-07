@@ -6,7 +6,8 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+  --font-heading: var(--font-heading), ui-sans-serif, system-ui, sans-serif;
 
   --color-bg: #fafafa;
   --color-surface: #ffffff;
@@ -16,20 +17,20 @@
   --color-text-secondary: #6e6e73;
   --color-text-tertiary: #aeaeb2;
 
-  --color-accent: #0071e3;
-  --color-accent-hover: #0077ed;
-  --color-accent-light: #e8f0fb;
+  --color-accent: #7c3aed;
+  --color-accent-hover: #6d28d9;
+  --color-accent-light: #f3e8ff;
 
-  --color-correct: #34c759;
-  --color-correct-light: #e8f8ed;
-  --color-incorrect: #ff3b30;
-  --color-incorrect-light: #fef0ef;
-  --color-timeout: #ff9f0a;
-  --color-timeout-light: #fff5e6;
+  --color-correct: #22c55e;
+  --color-correct-light: #ecfdf3;
+  --color-incorrect: #ef4444;
+  --color-incorrect-light: #fef2f2;
+  --color-timeout: #f59e0b;
+  --color-timeout-light: #fffbeb;
 
-  --color-easy: #34c759;
-  --color-medium: #ff9f0a;
-  --color-hard: #ff3b30;
+  --color-easy: #22c55e;
+  --color-medium: #f59e0b;
+  --color-hard: #ef4444;
 
   --color-border: #e5e5ea;
   --color-border-strong: #c7c7cc;
@@ -424,18 +425,18 @@ select:focus {
   --card-foreground: oklch(0.145 0 0);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
+  --primary: oklch(0.556 0.245 293.3);
   --primary-foreground: oklch(0.985 0 0);
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
   --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  --accent: oklch(0.94 0.03 293.3);
+  --accent-foreground: oklch(0.556 0.245 293.3);
   --destructive: oklch(0.577 0.245 27.325);
   --border: oklch(0.922 0 0);
   --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
+  --ring: oklch(0.556 0.245 293.3);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
@@ -459,18 +460,18 @@ select:focus {
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
+  --primary: oklch(0.714 0.161 293.5);
+  --primary-foreground: oklch(0.145 0 0);
   --secondary: oklch(0.269 0 0);
   --secondary-foreground: oklch(0.985 0 0);
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  --accent: oklch(0.28 0.08 293.3);
+  --accent-foreground: oklch(0.85 0.1 293.5);
   --destructive: oklch(0.704 0.191 22.216);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
+  --ring: oklch(0.714 0.161 293.5);
   --chart-1: oklch(0.87 0 0);
   --chart-2: oklch(0.556 0 0);
   --chart-3: oklch(0.439 0 0);
