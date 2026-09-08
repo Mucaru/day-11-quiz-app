@@ -1,19 +1,5 @@
 "use client";
 
-/**
- * QuizScreen — Layar utama saat quiz berlangsung.
- *
- * Hierarki:
- * QuizScreen
- * ├── Progress bar (soal ke-N dari total)
- * ├── Question Card
- * │   ├── Header (category, difficulty badge, Timer)
- * │   ├── Teks soal
- * │   ├── Answer Options
- * │   └── Feedback banner (correct/incorrect/timeout)
- * └── Question dots navigation
- */
-
 import { useQuizStore } from "../store/useQuizStore";
 import { useTimer } from "../hooks/useTimer";
 import { Timer } from "./Timer";
@@ -71,11 +57,11 @@ export function QuizScreen() {
           <span className="text-sm font-medium text-secondary">
             Question {questionNumber} of {TOTAL_QUESTIONS}
           </span>
-          <span className="text-sm font-semibold text-accent">{score} pts</span>
+          <span className="text-sm font-semibold text-accent-2">{score} pts</span>
         </div>
         <Progress
           value={progressPercent}
-          className="h-1.5 bg-border [&>div]:bg-accent [&>div]:transition-[width] [&>div]:duration-400"
+          className="h-1.5 bg-border [&>div]:bg-accent-2 [&>div]:transition-[width] [&>div]:duration-400"
         />
       </div>
 
@@ -123,19 +109,29 @@ export function QuizScreen() {
                 role="listitem"
                 aria-label={`Option ${optionLabel}: ${option}`}
                 className={cn(
-                  "w-full text-left px-4 py-3.5 rounded-xl border font-medium text-sm flex items-center gap-3 transition-all duration-150 active:scale-[0.99] disabled:cursor-not-allowed",
-                  status === "correct" &&
-                    "bg-correct-light border-correct text-correct",
-                  status === "incorrect" &&
-                    "bg-incorrect-light border-incorrect text-incorrect",
-                  status === "idle" &&
-                    cn(
-                      "bg-surface-raised border-border text-secondary",
-                      !isDisabled &&
-                        "hover:border-accent hover:bg-accent-light hover:text-accent",
-                      isDisabled && "opacity-50"
-                    )
+                  "w-full text-left px-4 py-3.5 rounded-xl border font-medium text-sm flex items-center gap-3 transition-all duration-150 active:scale-[0.99] disabled:cursor-not-allowed"
                 )}
+                style={{
+                  background:
+                    status === "correct"
+                      ? "var(--color-correct-light)"
+                      : status === "incorrect"
+                        ? "var(--color-incorrect-light)"
+                        : "var(--color-surface-raised)",
+                  borderColor:
+                    status === "correct"
+                      ? "var(--color-correct)"
+                      : status === "incorrect"
+                        ? "var(--color-incorrect)"
+                        : "var(--color-border)",
+                  color:
+                    status === "correct"
+                      ? "var(--color-correct)"
+                      : status === "incorrect"
+                        ? "var(--color-incorrect)"
+                        : "var(--color-text-secondary)",
+                  opacity: isDisabled && status === "idle" ? 0.5 : 1,
+                }}
               >
                 <span
                   className={cn(
@@ -201,14 +197,15 @@ export function QuizScreen() {
           return (
             <div
               key={i}
-              className={cn(
-                "h-2 rounded-full transition-all duration-300",
-                isCurrent
-                  ? "w-6 bg-accent"
+              className="h-2 rounded-full transition-all duration-300"
+              style={{
+                width: isCurrent ? "24px" : "8px",
+                background: isCurrent
+                  ? "var(--color-accent-2)"
                   : isCompleted
-                    ? "w-2 bg-tertiary"
-                    : "w-2 bg-border"
-              )}
+                    ? "var(--color-text-tertiary)"
+                    : "var(--color-border)",
+              }}
               aria-label={
                 isCurrent
                   ? `Current question ${i + 1}`

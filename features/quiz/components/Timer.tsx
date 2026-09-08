@@ -1,13 +1,5 @@
 "use client";
 
-/**
- * Timer — Circular Progress Ring
- *
- * Pure UI component: tidak ada logic, tidak ada state lokal.
- * Ini tetap custom SVG (bukan shadcn) karena shadcn tidak
- * menyediakan circular countdown timer sebagai primitive.
- */
-
 import { useQuizStore } from "../store/useQuizStore";
 import { TIMER_DURATION } from "@/constants/quiz";
 import { cn } from "@/lib/utils";
@@ -24,7 +16,7 @@ export function Timer() {
 
   const getColor = () => {
     const ratio = timeLeft / TIMER_DURATION;
-    if (ratio > 0.6) return "var(--color-accent)";
+    if (ratio > 0.6) return "var(--color-accent-2)";
     if (ratio > 0.3) return "var(--color-timeout)";
     return "var(--color-incorrect)";
   };

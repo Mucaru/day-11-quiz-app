@@ -1,17 +1,5 @@
 "use client";
 
-/**
- * StartScreen — Halaman pertama yang user lihat.
- *
- * Tanggung jawab:
- * 1. Input nama player (opsional, default "Anonymous")
- * 2. Pilih kategori soal
- * 3. Pilih difficulty
- * 4. Trigger start quiz
- * 5. Tampilkan loading state saat fetch soal
- * 6. Tampilkan error state kalau fetch gagal
- */
-
 import { useQuizStore } from "../store/useQuizStore";
 import { QUIZ_CATEGORIES, QUIZ_DIFFICULTIES } from "@/constants/quiz";
 import { Button } from "@/components/ui/button";
@@ -19,11 +7,15 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { cn } from "@/lib/utils";
-import { Loader2, Trophy, Sparkles, AlertTriangle, ArrowRight } from "lucide-react";
+import {
+  Loader2,
+  Trophy,
+  Sparkles,
+  AlertTriangle,
+  ArrowRight,
+} from "lucide-react";
 
 export function StartScreen() {
-  // Baca hanya field yang dibutuhkan komponen ini — biar re-render minimal.
   const playerName = useQuizStore((s) => s.playerName);
   const selectedCategory = useQuizStore((s) => s.selectedCategory);
   const selectedDifficulty = useQuizStore((s) => s.selectedDifficulty);
@@ -45,7 +37,7 @@ export function StartScreen() {
       <div className="text-center space-y-3 pt-4">
         <Badge
           variant="secondary"
-          className="inline-flex items-center gap-1.5 bg-accent-light text-accent border-transparent px-3 py-1 rounded-full font-medium"
+          className="inline-flex items-center gap-1.5 bg-accent-2-light text-accent-2 border-transparent px-3 py-1 rounded-full font-medium"
         >
           <Sparkles className="size-3.5" />
           Day 11 · 100 Days Challenge
@@ -56,7 +48,8 @@ export function StartScreen() {
         </h1>
 
         <p className="text-sm text-secondary mx-auto max-w-xs sm:max-w-none">
-          10 questions &middot; 15 seconds each &middot; Real trivia from Open Trivia DB
+          10 questions &middot; 15 seconds each &middot; Real trivia from Open
+          Trivia DB
         </p>
 
         {topPlayer && (
@@ -64,7 +57,9 @@ export function StartScreen() {
             <Trophy className="size-4 text-timeout" />
             <span>
               Best:{" "}
-              <strong className="text-text-primary">{topPlayer.playerName}</strong>{" "}
+              <strong className="text-text-primary">
+                {topPlayer.playerName}
+              </strong>{" "}
               · {topPlayer.score} pts
             </span>
           </div>
@@ -89,7 +84,7 @@ export function StartScreen() {
             placeholder="Anonymous"
             maxLength={30}
             disabled={isLoading}
-            className="bg-surface-raised border-border rounded-xl h-11 focus-visible:ring-accent focus-visible:border-accent"
+            className="bg-surface-raised border-border rounded-xl h-11 focus-visible:ring-accent-2 focus-visible:border-accent-2"
           />
         </div>
 
@@ -108,16 +103,20 @@ export function StartScreen() {
                   variant={isSelected ? "default" : "outline"}
                   disabled={isLoading}
                   onClick={() => setCategory(cat.id)}
-                  className={cn(
-                    "justify-start h-auto py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
-                    isSelected
-                      ? "bg-accent hover:bg-accent-hover text-white shadow-sm scale-[1.01]"
-                      : "bg-surface-raised text-secondary border-border hover:bg-surface"
-                  )}
+                  className="justify-start h-auto py-2.5 px-3 rounded-xl text-sm font-medium transition-all border"
+                  style={{
+                    background: isSelected
+                      ? "var(--color-accent-2)"
+                      : "var(--color-surface-raised)",
+                    color: isSelected
+                      ? "#ffffff"
+                      : "var(--color-text-secondary)",
+                    borderColor: isSelected
+                      ? "var(--color-accent-2)"
+                      : "var(--color-border)",
+                    transform: isSelected ? "scale(1.01)" : "scale(1)",
+                  }}
                 >
-                  {"icon" in cat && (cat as { icon?: string }).icon && (
-                    <span className="mr-1.5">{(cat as { icon?: string }).icon}</span>
-                  )}
                   {cat.label}
                 </Button>
               );
@@ -140,12 +139,18 @@ export function StartScreen() {
                   variant={isSelected ? "default" : "outline"}
                   disabled={isLoading}
                   onClick={() => setDifficulty(diff.value)}
-                  className={cn(
-                    "h-auto py-2.5 px-3 rounded-xl text-sm font-medium transition-all",
-                    isSelected
-                      ? "bg-text-primary hover:bg-text-primary/90 text-white dark:text-background border-transparent"
-                      : "bg-surface-raised text-secondary border-border hover:bg-surface"
-                  )}
+                  className="h-auto py-2.5 px-3 rounded-xl text-sm font-medium transition-all border"
+                  style={{
+                    background: isSelected
+                      ? "var(--color-text-primary)"
+                      : "var(--color-surface-raised)",
+                    color: isSelected
+                      ? "var(--color-bg)"
+                      : "var(--color-text-secondary)",
+                    borderColor: isSelected
+                      ? "var(--color-text-primary)"
+                      : "var(--color-border)",
+                  }}
                 >
                   {diff.label}
                 </Button>
@@ -167,7 +172,13 @@ export function StartScreen() {
           onClick={() => startQuiz()}
           disabled={isLoading}
           size="lg"
-          className="w-full py-6 rounded-xl font-semibold text-sm bg-accent hover:bg-accent-hover text-white shadow-md hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:translate-y-0"
+          className="w-full py-6 rounded-xl font-semibold text-sm shadow-md hover:-translate-y-0.5 transition-all disabled:opacity-70 disabled:translate-y-0"
+          style={{
+            background: isLoading
+              ? "var(--color-text-tertiary)"
+              : "var(--color-accent-2)",
+            color: "#ffffff",
+          }}
         >
           {isLoading ? (
             <span className="flex items-center justify-center gap-2">
@@ -190,7 +201,10 @@ export function StartScreen() {
           { label: "Timer", value: "15s" },
           { label: "Points", value: "10 / Q" },
         ].map((stat) => (
-          <Card key={stat.label} className="text-center py-4 px-2 shadow-sm rounded-xl">
+          <Card
+            key={stat.label}
+            className="text-center py-4 px-2 shadow-sm rounded-xl"
+          >
             <div className="font-heading text-xl font-bold tracking-tight text-text-primary">
               {stat.value}
             </div>
