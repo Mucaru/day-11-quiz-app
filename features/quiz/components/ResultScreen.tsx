@@ -17,7 +17,7 @@ import {
   Clock,
   RotateCcw,
 } from "lucide-react";
-import type { ComponentType } from "react";
+import type { LucideIcon } from "lucide-react";
 
 export function ResultScreen() {
   const score = useQuizStore((s) => s.score);
@@ -36,11 +36,11 @@ export function ResultScreen() {
   const maxScore = TOTAL_QUESTIONS * POINTS_PER_CORRECT;
   const percentage = Math.round((score / maxScore) * 100);
 
-  const getPerformance = (): {
-    Icon: ComponentType<{ className?: string }>;
+const getPerformance = (): {
+    Icon: LucideIcon;
     title: string;
     sub: string;
-  } => {
+  } =>  {
     if (percentage === 100)
       return { Icon: Trophy, title: "Perfect Score!", sub: "Absolutely flawless. You're a trivia master." };
     if (percentage >= 80)
