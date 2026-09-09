@@ -444,7 +444,7 @@ select:focus {
   --surface: oklch(1 0 0);
   --surface-raised: oklch(0.96 0 0);
   --text-primary: oklch(0.145 0 0);
-  --text-secondary: oklch(0.44 0 0);
+  --text-secondary: oklch(0.38 0 0);
   --text-tertiary: oklch(0.68 0 0);
   --accent-2: #7c3aed;
   --accent-2-hover: #6d28d9;
@@ -465,7 +465,7 @@ select:focus {
   --surface: oklch(0.17 0 0);
   --surface-raised: oklch(0.22 0 0);
   --text-primary: oklch(0.97 0 0);
-  --text-secondary: oklch(0.72 0 0);
+  --text-secondary: oklch(0.78 0 0);
   --text-tertiary: oklch(0.5 0 0);
   --accent-2: #a78bfa;
   --accent-2-hover: #c4b5fd;

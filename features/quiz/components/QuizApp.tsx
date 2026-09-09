@@ -35,13 +35,13 @@ export function QuizApp() {
 
   return (
     <div className="flex flex-col min-h-dvh">
-      <header className="py-5 border-b border-[--color-border]">
+      <header className="py-5 border-b border-border">
         <div className="container-quiz">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <div
                 className="w-7 h-7 rounded-lg flex items-center justify-center text-white text-sm font-bold"
-                style={{ background: "var(--color-accent)" }}
+                style={{ background: "var(--color-accent-2)" }}
               >
                 Q
               </div>
@@ -64,12 +64,13 @@ export function QuizApp() {
                   border: "1px solid var(--color-border)",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget).style.background = "var(--color-border)";
-                  (e.currentTarget).style.color = "var(--color-text-primary)";
+                  e.currentTarget.style.background = "var(--color-border)";
+                  e.currentTarget.style.color = "var(--color-text-primary)";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget).style.background = "var(--color-surface-raised)";
-                  (e.currentTarget).style.color = "var(--color-text-secondary)";
+                  e.currentTarget.style.background =
+                    "var(--color-surface-raised)";
+                  e.currentTarget.style.color = "var(--color-text-secondary)";
                 }}
               >
                 🏆 Leaderboard
@@ -83,7 +84,7 @@ export function QuizApp() {
         <div className="container-quiz">{renderScreen()}</div>
       </main>
 
-      <footer className="py-6 border-t border-[--color-border]">
+      <footer className="py-6 border-t border-border">
         <div className="container-quiz">
           <p
             className="text-center text-sm"
