@@ -59,12 +59,11 @@ export function QuizScreen() {
           </span>
           <span className="text-sm font-semibold text-accent-2">{score} pts</span>
         </div>
-        <Progress
-          value={progressPercent}
-          className="h-1.5 bg-border [&>div]:bg-accent-2 [&>div]:transition-[width] [&>div]:duration-400"
-        />
+      <Progress
+        value={progressPercent}
+        className="[&_[data-slot=progress-track]]:h-1.5 [&_[data-slot=progress-track]]:bg-border [&_[data-slot=progress-indicator]]:bg-accent-2 [&_[data-slot=progress-indicator]]:transition-[width] [&_[data-slot=progress-indicator]]:duration-400"
+      />
       </div>
-
       {/* ── Question Card ── */}
       <Card
         key={currentQuestion.id}

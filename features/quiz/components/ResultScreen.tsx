@@ -128,17 +128,14 @@ const getPerformance = (): {
         </div>
         <Progress
           value={percentage}
-          className="h-2 bg-surface-raised [&>div]:transition-all [&>div]:duration-1000"
-          style={
-            {
-              "--progress-color":
-                percentage >= 80
-                  ? "var(--color-correct)"
-                  : percentage >= 50
-                    ? "var(--color-timeout)"
-                    : "var(--color-incorrect)",
-            } as React.CSSProperties
-          }
+          className={cn(
+            "[&_[data-slot=progress-track]]:h-2 [&_[data-slot=progress-track]]:bg-surface-raised [&_[data-slot=progress-indicator]]:transition-all [&_[data-slot=progress-indicator]]:duration-1000",
+            percentage >= 80
+              ? "[&_[data-slot=progress-indicator]]:bg-correct"
+              : percentage >= 50
+                ? "[&_[data-slot=progress-indicator]]:bg-timeout"
+                : "[&_[data-slot=progress-indicator]]:bg-incorrect"
+          )}
         />
         <p className="text-xs text-tertiary">
           {correctCount} correct · {incorrectCount} incorrect · {skippedCount} timed out
