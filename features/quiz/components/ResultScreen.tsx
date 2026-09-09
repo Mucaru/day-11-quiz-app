@@ -5,6 +5,7 @@ import { TOTAL_QUESTIONS, POINTS_PER_CORRECT } from "@/constants/quiz";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { cn } from "@/lib/utils";
 import {
   Trophy,
   Star,
