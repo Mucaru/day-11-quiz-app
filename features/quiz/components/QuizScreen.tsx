@@ -54,7 +54,7 @@ export function QuizScreen() {
       {/* ── Progress Bar ── */}
       <div className="space-y-2">
         <div className="flex items-center justify-between">
-          <span className="text-sm font-medium text-secondary">
+          <span className="text-sm font-medium text-text-primary">
             Question {questionNumber} of {TOTAL_QUESTIONS}
           </span>
           <span className="text-sm font-semibold text-accent-2">{score} pts</span>
@@ -137,7 +137,7 @@ export function QuizScreen() {
                     "shrink-0 w-6 h-6 rounded-md flex items-center justify-center text-xs font-bold",
                     status === "correct" && "bg-correct text-white",
                     status === "incorrect" && "bg-incorrect text-white",
-                    status === "idle" && "bg-border text-secondary"
+                    status === "idle" && "bg-border text-text-primary"
                   )}
                 >
                   {status === "correct" ? (
